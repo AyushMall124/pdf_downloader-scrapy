@@ -7,6 +7,9 @@
 
 ```
 
+# NOTE: Delete the pre-existing `Data_final.csv` and `PDF_Directory` in the folder to see the change
+
+
 # 3. Run the project:
 Open the terminal in the folder containing the 'pdf_spider.py' and run the following command:
 ```
