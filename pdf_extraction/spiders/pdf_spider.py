@@ -11,35 +11,39 @@ from scrapy.http import Request
 class pdf_extractor(scrapy.Spider):
     name = "pdf_extractor"
 
-    # allowed_domains = ["www.pwc.com"]
+
     start_urls = ["https://www.privacy.gov.ph/memorandum-circulars/",
                   "https://www.privacy.gov.ph/data-privacy-act-primer/",
                   "https://www.privacy.gov.ph/advisories/",
-                  "https://www.privacy.gov.ph/advisory-opinion"]
+                  "https://www.privacy.gov.ph/advisory-opinion"]                #list of urls to be searched on
 
 
 
     def parse(self, response):
 
 
-        base = 'https://www.privacy.gov.ph'
+        base = 'https://www.privacy.gov.ph'                        #base url for the pdf link
 
-        for a in response.xpath('//a[@href]/@href'):
-            link = a.extract()
+        for a in response.xpath('//a[@href]/@href'):               #looking for <a> with 'href' , and then extracting the value of 'href'using xpath. Could have also used css.selection
+            link = a.extract()                                   # gets all occurences
             # self.logger.info(link)
 
-            if link.endswith('.pdf'):
+            if link.endswith('.pdf'):                                #finding links ending with .pdf"
 
                 link = urllib.parse.urljoin(base, link)
                 self.logger.info(link)
                 # name_pdf =
-                yield Request(link, callback=self.save_pdf)
+                yield Request(link, callback=self.save_pdf)               #requesting from the url, and calling a function to operate on the response
+
+
+
+
 
 
 
 
     def save_pdf(self, response):
-        item = PdfExtractionItem()
+        item = PdfExtractionItem()                                       #creating an item to store relevant information
 
         dirName = 'PDF_Directory'
 
@@ -50,7 +54,7 @@ class pdf_extractor(scrapy.Spider):
         except FileExistsError:
             print("Directory exists")
         path1 = response.url.split('/')
-        path = response.url.split('/')[-1]
+        path = response.url.split('/')[-1]          #getting the name of the pdf file
 
 
         item['Name'] = path
@@ -59,7 +63,7 @@ class pdf_extractor(scrapy.Spider):
 
 
         path = os.path.join(dirName , path)
-        self.logger.info('Saving PDF %s', path1)
+        self.logger.info('Saving PDF %s', path1)             #saving pdfs into the folder
         with open(path, 'wb') as f:
             f.write(response.body)
 
